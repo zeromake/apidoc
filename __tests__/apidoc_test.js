@@ -5,17 +5,14 @@
  */
 
 // node modules
-var apidoc = require('apidoc-core');
+var apidoc = require('@zeromake/apidoc-core');
 var exec   = require('child_process').exec;
 var fs     = require('fs-extra');
-var path   = require('path');
 var semver = require('semver');
-var should = require('should');
 
 var versions = require('apidoc-example').versions;
 
-describe('apiDoc full example', function() {
-
+describe('apiDoc full example', () => {
     // get latest example for the used apidoc-spec
     var latestExampleVersion = semver.maxSatisfying(versions, '~' + apidoc.getSpecificationVersion()); // ~0.2.0 = >=0.2.0 <0.3.0
 
@@ -30,24 +27,24 @@ describe('apiDoc full example', function() {
         'index.html'
     ];
 
-    before(function(done) {
-        fs.removeSync('./tmp/');
+    beforeAll(function(done) {
+        fs.removeSync('tmp/');
 
         done();
     });
 
-    after(function(done) {
+    afterAll(function(done) {
         done();
     });
 
     // version found
-    it('should find latest example version', function(done) {
-        should(latestExampleVersion).be.ok;
+    test('should find latest example version', done => {
+        expect(latestExampleVersion).toBeTruthy();
         done();
     });
 
     // create
-    it('should create example in tmp/', function(done) {
+    test('should create example in tmp/', done => {
         var cmd = 'node ./bin/apidoc -i ' + exampleBasePath + '/src/ -o tmp/ -t test/template/ --silent';
         exec(cmd, function(err, stdout, stderr) {
             if (err)
@@ -61,17 +58,17 @@ describe('apiDoc full example', function() {
     });
 
     // check
-    it('should find created files', function(done) {
+    test('should find created files', done => {
         fixtureFiles.forEach(function(name) {
-            fs.existsSync(fixturePath + '/' + name).should.eql(true);
+            expect(fs.existsSync(fixturePath + '/' + name)).toBe(true);
         });
         done();
     });
 
     // compare
-    it('created files should equal to fixtures', function(done) {
-        var timeRegExp = /\"time\"\:\s\"(.*)\"/g;
-        var versionRegExp = /\"version\"\:\s\"(.*)\"/g;
+    test('created files should equal to fixtures', done => {
+        var timeRegExp = /"time":\s"(.*)"/g;
+        var versionRegExp = /"version":\s"(.*)"/g;
         var filenameRegExp = new RegExp('(?!"filename":\\s")(' + exampleBasePath + '/)', 'g');
 
         fixtureFiles.forEach(function(name) {
@@ -89,8 +86,8 @@ describe('apiDoc full example', function() {
             // remove the base path
             createdContent = createdContent.replace(filenameRegExp, '');
 
-            var fixtureLines = fixtureContent.split(/\n/);
-            var createdLines = createdContent.split(/\n/);
+            var fixtureLines = fixtureContent.split(/[\r\n]/);
+            var createdLines = createdContent.split(/[\r\n]/);
 
             if (fixtureLines.length !== createdLines.length)
                 throw new Error('File ./tmp/' + name + ' not equals to ' + fixturePath + '/' + name);

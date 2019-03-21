@@ -5,16 +5,14 @@
  */
 
 // node modules
-var apidoc = require('apidoc-core');
+var apidoc = require('@zeromake/apidoc-core');
 var exec   = require('child_process').exec;
 var fs     = require('fs-extra');
-var path   = require('path');
 var semver = require('semver');
-var should = require('should');
 
 var versions = require('apidoc-example').versions;
 
-describe('apiDoc custom markdown parser', function() {
+describe('apiDoc custom markdown parser', () => {
 
     // get latest example for the used apidoc-spec
     var latestExampleVersion = semver.maxSatisfying(versions, '~' + apidoc.getSpecificationVersion()); // ~0.2.0 = >=0.2.0 <0.3.0
@@ -30,30 +28,30 @@ describe('apiDoc custom markdown parser', function() {
         'index.html'
     ];
 
-    var markdownFile     = './fixtures/custom_markdown_parser.js';
+    var markdownFile     = '../test/fixtures/custom_markdown_parser.js';
     var markdownFileBase = '../test/fixtures/custom_markdown_parser.js';
 
-    before(function(done) {
-        fs.removeSync('./tmp/');
+    beforeAll(function(done) {
+        fs.removeSync('tmp/');
 
         done();
     });
 
-    after(function(done) {
+    afterAll(function(done) {
         done();
     });
 
     // Render static text.
-    it('should render static text with custom markdown parser', function(done) {
+    test('should render static text with custom markdown parser', done => {
         var Markdown = require(markdownFile);
         var markdownParser = new Markdown();
         var text = markdownParser.render('some text');
-        should(text).equal('Custom Markdown Parser: some text');
+        expect(text).toBe('Custom Markdown Parser: some text');
         done();
     });
 
     // create
-    it('should create example in tmp/', function(done) {
+    test('should create example in tmp/', done => {
         var cmd = 'node ./bin/apidoc -i ' + exampleBasePath + '/src/ -o tmp/ -t test/template/ --markdown ' + markdownFileBase + ' --silent';
         exec(cmd, function(err, stdout, stderr) {
             if (err)
@@ -67,20 +65,20 @@ describe('apiDoc custom markdown parser', function() {
     });
 
     // check
-    it('should find created files', function(done) {
+    test('should find created files', done => {
         fixtureFiles.forEach(function(name) {
-            fs.existsSync(fixturePath + '/' + name).should.eql(true);
+            expect(fs.existsSync(fixturePath + '/' + name)).toBe(true);
         });
         done();
     });
 
     // Count how many custom parser text inserts where found.
-    it('created files should have custom text', function(done) {
+    test('created files should have custom text', done => {
         var countCustomText = 0;
         fixtureFiles.forEach(function(name) {
-            var createdContent = fs.readFileSync('./tmp/' + name, 'utf8');
+            var createdContent = fs.readFileSync('tmp/' + name, 'utf8');
 
-            var createdLines = createdContent.split(/\n/);
+            var createdLines = createdContent.split(/[\r\n]/);
 
             for (var lineNumber = 0; lineNumber < createdLines.length; lineNumber += 1) {
                 if (createdLines[lineNumber].indexOf('Custom Markdown Parser: ') !== -1)
@@ -88,7 +86,7 @@ describe('apiDoc custom markdown parser', function() {
             }
         });
 
-        should.notEqual(countCustomText, 0);
+        expect(countCustomText).not.toEqual(0);
 
         done();
     });

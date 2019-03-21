@@ -7,14 +7,14 @@
 var fs = require('fs-extra');
 var exec = require('child_process').exec;
 var path = require('path');
-var should = require('should');
+const basePath = __dirname;
 
-describe('apiDoc multiple folder input', function() {
+describe('apiDoc multiple folder input', () => {
 
-    var fixturePath = 'test/multi_input_folder/fixtures';
-    var projectBaseBath = 'test/multi_input_folder/testproject';
+    var fixturePath =  path.join(basePath, '../test/multi_input_folder/fixtures');
+    var projectBaseBath = path.join(basePath, '../test/multi_input_folder/testproject');
 
-    var testTargetPath = "./tmp/apidocmulti";
+    var testTargetPath = path.join(basePath, "../tmp/apidocmulti");
 
     var fixtureFiles = [
         'api_data.js',
@@ -24,44 +24,47 @@ describe('apiDoc multiple folder input', function() {
         'index.html'
     ];
 
-    before(function(done) {
+    beforeAll(function(done) {
         fs.removeSync(testTargetPath);
 
         done();
     });
 
-    after(function(done) {
+    afterAll(function(done) {
         done();
     });
 
-    it('should create apidoc in /tmp/apidocmulti with multiple input folders', function(done) {
+    test(
+        'should create apidoc in /tmp/apidocmulti with multiple input folders',
+        done => {
 
-        var commonDefinitions = path.join('', 'folder1');
-        var historyDefinition = path.join('', 'folder2');
-        var srcFolder = path.join('', 'src');
+            var commonDefinitions = path.join('', 'folder1');
+            var historyDefinition = path.join('', 'folder2');
+            var srcFolder = path.join('', 'src');
 
-        var cmd = 'cd ' + projectBaseBath + ' && ';
-        cmd += 'node ../../../bin/apidoc';
-        cmd += ' -i ' + commonDefinitions;
-        cmd += ' -i ' + historyDefinition;
-        cmd += ' -i ' + srcFolder;
-        cmd += ' -o ../../../tmp/apidocmulti';
-        cmd += ' -t ../../template/';
+            var cmd = 'cd ' + projectBaseBath + ' && ';
+            cmd += 'node ../../../bin/apidoc';
+            cmd += ' -i ' + commonDefinitions;
+            cmd += ' -i ' + historyDefinition;
+            cmd += ' -i ' + srcFolder;
+            cmd += ' -o ../../../tmp/apidocmulti';
+            cmd += ' -t ../../template/';
 
-        exec(cmd, function(err, stdout, stderr) {
-            if (err)
-                throw err;
+            exec(cmd, function(err, stdout, stderr) {
+                if (err)
+                    throw err;
 
-            if (stderr)
-                throw stderr;
+                if (stderr)
+                    throw stderr;
 
-            done();
-        });
-    });
+                done();
+            });
+        }
+    );
 
-    it('created files should equal to fixtures', function(done) {
-        var timeRegExp = /\"time\"\:\s\"(.*)\"/g;
-        var versionRegExp = /\"version\"\:\s\"(.*)\"/g;
+    test('created files should equal to fixtures', done => {
+        var timeRegExp = /"time":\s"(.*)"/g;
+        var versionRegExp = /"version":\s"(.*)"/g;
         var filenameRegExp = new RegExp('(?!"filename":\\s")(' + projectBaseBath + '/)', 'g');
 
         fixtureFiles.forEach(function(name) {
@@ -79,12 +82,13 @@ describe('apiDoc multiple folder input', function() {
             // remove the base path
             createdContent = createdContent.replace(filenameRegExp, '');
 
-            var fixtureLines = fixtureContent.split(/\n/);
-            var createdLines = createdContent.split(/\n/);
+            var fixtureLines = fixtureContent.split(/[\r\n]/);
+            var createdLines = createdContent.split(/[\r\n]/);
 
-            if (fixtureLines.length !== createdLines.length)
-                throw new Error('File ' + path.join(testTargetPath, name) + ' not equals to ' + fixturePath + '/' + name);
-
+            if (fixtureLines.length !== createdLines.length) {
+                throw new Error('File ' + name + ' not equals to ' + name +` ;${fixtureLines.length} != ${createdLines.length}`);
+            }
+                
             for (var lineNumber = 0; lineNumber < fixtureLines.length; lineNumber += 1) {
                 if (fixtureLines[lineNumber] !== createdLines[lineNumber])
                     throw new Error('File ' + path.join(testTargetPath, name) + ' not equals to ' + fixturePath + '/' + name + ' in line ' + (lineNumber + 1) +
