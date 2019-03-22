@@ -84,7 +84,7 @@ function transformToObject(filters) {
   filters.forEach(function(filter) {
     var splits = filter.split('=');
     if (splits.length === 2) {
-      var obj = {};
+      // var obj = {};
       result[splits[0]] = path.resolve(splits[1], '');
     }
   });

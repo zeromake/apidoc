@@ -220,7 +220,7 @@ require([
           topics.forEach(function(entry) {
               var level = entry.substring(2,3);
               var title = entry.replace(/<.+?>/g, '');    // Remove all HTML tags for the title
-              var entry_tags = entry.match(/id="api-([^\-]+)(?:-(.+))?"/);    // Find the group and name in the id property
+              var entry_tags = entry.match(/id="api-([^-]+)(?:-(.+))?"/);    // Find the group and name in the id property
               var group = (entry_tags ? entry_tags[1] : null);
               var name = (entry_tags ? entry_tags[2] : null);
               if (level==1 && title && group)  {
@@ -265,7 +265,7 @@ require([
     // Mainmenu Footer entry
     if (apiProject.footer) {
         var last_nav_index = nav.length;
-        var found_level1 = add_nav(nav, apiProject.footer.content, nav.length); // Add level 1 and 2 titles
+        found_level1 = add_nav(nav, apiProject.footer.content, nav.length); // Add level 1 and 2 titles
         if (!found_level1 && apiProject.footer.title != null) {    // If no Level 1 tags were found, make a title
             nav.splice(last_nav_index, 0, {
                 group: '_footer',
@@ -364,7 +364,7 @@ require([
         });
 
         // render Section with Articles
-        var fields = {
+        fields = {
             group: groupEntry,
             title: title,
             description: description,
@@ -438,7 +438,7 @@ require([
         $('.nav-tabs-examples').find('a:first').tab('show');
 
         // sample request switch
-        $('.sample-request-switch').click(function (e) {
+        $('.sample-request-switch').click(function () {
             var name = '.' + $(this).attr('name') + '-fields';
             $(name).addClass('hide');
             $(this).parent().next(name).removeClass('hide');
@@ -470,7 +470,7 @@ require([
         $('#sidenav li:not(.nav-fixed)').addClass('hide');
 
         // show 1st equal or lower Version of each entry
-        $('article[data-version]').each(function(index) {
+        $('article[data-version]').each(function() {
             var group = $(this).data('group');
             var name = $(this).data('name');
             var version = $(this).data('version');
@@ -487,7 +487,7 @@ require([
         });
 
         // show 1st equal or lower Version of each entry
-        $('article[data-version]').each(function(index) {
+        $('article[data-version]').each(function() {
             var group = $(this).data('group');
             $('section#api-' + group).removeClass('hide');
             if ($('section#api-' + group + ' article:visible').length === 0) {
@@ -518,7 +518,7 @@ require([
         $('#compareAllWithPredecessor').trigger('click');
 
         if (window.location.hash) {
-            var id = window.location.hash;
+            id = window.location.hash;
             $('html,body').animate({ scrollTop: parseInt($(id).offset().top) - 18 }, 0);
         }
     }
@@ -529,7 +529,7 @@ require([
     var options = {
       valueNames: [ 'nav-list-item' ]
     };
-    var endpointsList = new List('scrollingNav', options);
+    var endpointsList = new window.List('scrollingNav', options);
 
     /**
      * Set initial focus to search input
@@ -582,7 +582,7 @@ require([
             // the version of the entry is set to the highest version (reset)
             resetArticle(group, name, version);
         } else {
-            var $compareToArticle = $('article[data-group=\'' + group + '\'][data-name=\'' + name + '\'][data-version=\'' + selectedVersion + '\']');
+            // var $compareToArticle = $('article[data-group=\'' + group + '\'][data-name=\'' + name + '\'][data-version=\'' + selectedVersion + '\']');
 
             var sourceEntry = {};
             var compareEntry = {};
@@ -620,7 +620,7 @@ require([
             if (entry.info && entry.info.fields)
                 fields._hasTypeInInfoFields = _hasTypeInFields(entry.info.fields);
 
-            var entry = compareEntry;
+            entry = compareEntry;
             if (fields._hasTypeInParameterFields !== true && entry.parameter && entry.parameter.fields)
                 fields._hasTypeInParameterFields = _hasTypeInFields(entry.parameter.fields);
 
@@ -684,7 +684,7 @@ require([
             }))
 
             for (var dot_count = 1; dot_count <= max_dot_count; dot_count++) {
-                reversed.forEach(function (item, index) {
+                reversed.forEach(function (item) {
                     var parts = item.field.split(".");
                     if (parts.length - 1 == dot_count) {
                         var fields_names = fields.map(function (item) { return item.field; });
